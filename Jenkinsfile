@@ -15,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'master', url: 'https://github.com/shubnimkar/2048_React_K8S.git'
+                git branch: 'master', url: 'https://github.com/mademalekhya/2048_React_K8S.git'
             }
         }
         stage("Sonarqube Analysis "){
@@ -56,31 +56,23 @@ pipeline{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
                        sh "docker build -t 2048 ."
-                       sh "docker tag 2048 shubnimkar/2048:latest "
-                       sh "docker push shubnimkar/2048:latest "
+                       sh "docker tag 2048 alekhyamadem/2048:latest "
+                       sh "docker push alekhyamadem/2048:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image shubnimkar/2048:latest > trivy.txt" 
+                sh "trivy image alekhyamadem/2048:latest > trivy.txt" 
             }
         }
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d --name 2048 -p 3000:3000 shubnimkar/2048:latest'
+                sh 'docker run -d --name 2048 -p 3000:3000 alekhyamadem/2048:latest'
             }
         }
         
-        stage('Deploy to kubernets'){
-            steps{
-                script{
-                    withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-                       sh 'kubectl apply -f deployment.yaml'
-                  }
-                }
-            }
-        }
+        
     }
 }
